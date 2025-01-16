@@ -20,7 +20,7 @@
             }
           }
         },
-        "store_and_index": {
+        "data_parse": {
           "transformations": [
             {
               "create_object": true,
@@ -34,7 +34,22 @@
           ]
         }
       }
-    ]
+    ],
+    "store_and_index": {
+      "storage_context": {
+        "vector_store": {
+          "create_object": true,
+          "module": "llama_index.vector_stores.elasticsearch",
+          "class": "ElasticsearchStore",
+          "init_args": {
+            "index_name": "agentscope_code_rag",
+            "es_url": "http://localhost:9200",
+            "es_user": "elastic",
+            "es_password": ""
+          }
+        }
+      }
+    }
   },
   {
     "knowledge_id": "agentscope_api_rag",
@@ -57,7 +72,22 @@
           }
         }
       }
-    ]
+    ],
+    "store_and_index": {
+      "storage_context": {
+        "vector_store": {
+          "create_object": true,
+          "module": "llama_index.vector_stores.elasticsearch",
+          "class": "ElasticsearchStore",
+          "init_args": {
+            "index_name": "agentscope_api_rag",
+            "es_url": "http://localhost:9200",
+            "es_user": "elastic",
+            "es_password": ""
+          }
+        }
+      }
+    }
   },
   {
     "knowledge_id": "agentscope_global_rag",
@@ -95,7 +125,7 @@
             }
           }
         },
-        "store_and_index": {
+        "data_parse": {
           "transformations": [
             {
               "create_object": true,
@@ -109,6 +139,21 @@
           ]
         }
       }
-    ]
+    ],
+    "store_and_index": {
+      "storage_context": {
+        "vector_store": {
+          "create_object": true,
+          "module": "llama_index.vector_stores.elasticsearch",
+          "class": "ElasticsearchStore",
+          "init_args": {
+            "index_name": "agentscope_global_rag",
+            "es_url": "http://localhost:9200",
+            "es_user": "elastic",
+            "es_password": ""
+          }
+        }
+      }
+    }
   }
 ]

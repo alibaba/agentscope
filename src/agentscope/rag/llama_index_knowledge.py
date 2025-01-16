@@ -253,9 +253,21 @@ class LlamaIndexKnowledge(Knowledge):
         Load the persisted index from persist_dir.
         """
         # load the storage_context
-        storage_context = StorageContext.from_defaults(
-            persist_dir=self.persist_dir,
+        # Inject the persist_dir setting
+        self.knowledge_config.get("store_and_index", {}).get(
+            "storage_context",
+            {},
+        ).update(
+            {
+                "persist_dir": self.persist_dir,
+            },
         )
+        storage_context = self._set_store(self.knowledge_config)
+        if not storage_context:
+            # if storage_context is not set, use the default
+            storage_context = StorageContext.from_defaults(
+                persist_dir=self.persist_dir,
+            )
         # construct index from
         self.index = load_index_from_storage(
             storage_context=storage_context,
@@ -288,10 +300,14 @@ class LlamaIndexKnowledge(Knowledge):
                 transformations=transformations,
             )
             nodes = nodes + nodes_docs
+        # set store
+        storage_context = self._set_store(self.knowledge_config)
         # convert nodes to index
+        # if storage_context is None, use the default
         self.index = VectorStoreIndex(
             nodes=nodes,
             embed_model=self.emb_model,
+            storage_context=storage_context,
         )
         logger.info("index calculation completed.")
         # persist the calculated index
@@ -402,7 +418,16 @@ class LlamaIndexKnowledge(Knowledge):
         Args:
             config (dict): a dictionary containing configurations.
         """
-        if "store_and_index" in config:
+        if "data_parse" in config:
+            temp = self._prepare_args_from_config(
+                config=config.get("data_parse", {}),
+            )
+            transformations = temp.get("transformations")
+        elif "store_and_index" in config:
+            logger.warning(
+                "The old configuration structure is deprecated, "
+                "please use data_parse instead of store_and_index.",
+            )
             temp = self._prepare_args_from_config(
                 config=config.get("store_and_index", {}),
             )
@@ -427,6 +452,26 @@ class LlamaIndexKnowledge(Knowledge):
         # as the last step, we need to repackage the transformations in dict
         transformations = {"transformations": transformations}
         return transformations
+
+    def _set_store(self, config: dict) -> Any:
+        """
+        Set the store as needed, or just use the default setting.
+
+        Args:
+            config (dict): a dictionary containing configurations.
+        """
+        if "store_and_index" in config:
+            temp = self._prepare_args_from_config(
+                config=config.get("store_and_index", {}),
+            )
+            context_config = temp.get("storage_context")
+        else:
+            return None
+
+        # Create the storage context
+        storage_context = StorageContext.from_defaults(**context_config)
+        logger.info("storage_context is ready.")
+        return storage_context
 
     def _get_retriever(
         self,
