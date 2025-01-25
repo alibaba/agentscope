@@ -1,0 +1,96 @@
+[
+  {
+    "knowledge_id": "agentscope_code_rag",
+    "emb_model_config_name": "qwen_emb_config",
+    "chunk_size": 2048,
+    "chunk_overlap": 40,
+    "data_processing": [
+      {
+        "load_data": {
+          "loader": {
+            "create_object": true,
+            "module": "langchain_community.document_loaders",
+            "class": "DirectoryLoader",
+            "init_args": {
+              "path": "../../src/agentscope",
+              "recursive": true,
+              "glob": ["**/*.py"]
+            }
+          }
+        },
+        "data_parse": {
+          "splitter": {
+            "create_object": true,
+            "module": "langchain_text_splitters.python",
+            "class": "PythonCodeTextSplitter",
+            "init_args": {}
+          }
+        }
+      }
+    ]
+  },
+  {
+    "knowledge_id": "agentscope_api_rag",
+    "emb_model_config_name": "qwen_emb_config",
+    "chunk_size": 1024,
+    "chunk_overlap": 40,
+    "data_processing": [
+      {
+        "load_data": {
+          "loader": {
+            "create_object": true,
+            "module": "langchain_community.document_loaders",
+            "class": "DirectoryLoader",
+            "init_args": {
+              "path": "../../docs/docstring_html/",
+              "glob": ["*.html"]
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "knowledge_id": "agentscope_global_rag",
+    "emb_model_config_name": "qwen_emb_config",
+    "chunk_size": 2048,
+    "chunk_overlap": 40,
+    "data_processing": [
+      {
+        "load_data": {
+          "loader": {
+            "create_object": true,
+            "module": "langchain_community.document_loaders",
+            "class": "DirectoryLoader",
+            "init_args": {
+              "path": "../../docs/sphinx_doc/en/source/tutorial",
+              "glob": ["*.md"]
+            }
+          }
+        }
+      },
+      {
+        "load_data": {
+          "loader": {
+            "create_object": true,
+            "module": "langchain_community.document_loaders",
+            "class": "DirectoryLoader",
+            "init_args": {
+              "path": "../../src/agentscope",
+              "recursive": true,
+              "glob": ["**/*.py"]
+            }
+          }
+        },
+        "data_parse": {
+          "splitter": {
+            "create_object": true,
+            "module": "langchain_text_splitters.python",
+            "class": "PythonCodeTextSplitter",
+            "init_args": {}
+          }
+        }
+      }
+    ]
+  }
+]

@@ -10,6 +10,9 @@ from agentscope.agents import AgentBase
 from ..manager import ModelManager
 from .knowledge import Knowledge
 
+from .llama_index_knowledge import LlamaIndexKnowledge
+from .langchain_knowledge import LangChainKnowledge
+
 DEFAULT_INDEX_CONFIG = {
     "knowledge_id": "",
     "data_processing": [],
@@ -24,10 +27,25 @@ DEFAULT_LOADER_CONFIG = {
         },
     },
 }
+LANGCHAIN_LOADER_CONFIG = {
+    "load_data": {
+        "loader": {
+            "create_object": True,
+            "module": "langchain_community.document_loaders",
+            "class": "DirectoryLoader",
+            "init_args": {},
+        },
+    },
+}
 DEFAULT_INIT_CONFIG = {
     "input_dir": "",
     "recursive": True,
     "required_exts": [],
+}
+LANGCHAIN_INIT_CONFIG = {
+    "path": "",
+    "recursive": True,
+    "glob": [],
 }
 
 
@@ -70,6 +88,7 @@ class KnowledgeBank:
         emb_model_name: str,
         data_dirs_and_types: dict[str, list[str]] = None,
         model_name: Optional[str] = None,
+        backend_engine: Optional[str] = None,
         knowledge_config: Optional[dict] = None,
     ) -> None:
         """
@@ -85,6 +104,10 @@ class KnowledgeBank:
                 dictionary of data paths (keys) to the data types
                 (file extensions) for knowledgebase
                 (e.g., [".md", ".py", ".html"])
+                (if use langchain backend: ["*.md", "**/*.py", "*.html"])
+            backend_engine (Optional[str]):
+                name of the backend engine
+                (only used for llama_index or langchain)
             knowledge_config (optional[dict]):
                 complete indexing configuration, used for more advanced
                 applications. Users can customize
@@ -105,7 +128,6 @@ class KnowledgeBank:
                 )
             ''
         """
-        from .llama_index_knowledge import LlamaIndexKnowledge
 
         if knowledge_id in self.stored_knowledge:
             raise ValueError(f"knowledge_id {knowledge_id} already exists.")
@@ -113,18 +135,52 @@ class KnowledgeBank:
         assert data_dirs_and_types is not None or knowledge_config is not None
 
         if knowledge_config is None:
-            knowledge_config = copy.deepcopy(DEFAULT_INDEX_CONFIG)
-            for data_dir, types in data_dirs_and_types.items():
-                loader_config = copy.deepcopy(DEFAULT_LOADER_CONFIG)
-                loader_init = copy.deepcopy(DEFAULT_INIT_CONFIG)
-                loader_init["input_dir"] = data_dir
-                loader_init["required_exts"] = types
-                loader_config["load_data"]["loader"]["init_args"] = loader_init
-                knowledge_config["data_processing"].append(loader_config)
+            if backend_engine is None or backend_engine == "llama_index":
+                backend_engine = "llama_index"
+                knowledge_config = copy.deepcopy(DEFAULT_INDEX_CONFIG)
+                for data_dir, types in data_dirs_and_types.items():
+                    loader_config = copy.deepcopy(DEFAULT_LOADER_CONFIG)
+                    loader_init = copy.deepcopy(DEFAULT_INIT_CONFIG)
+                    loader_init["input_dir"] = data_dir
+                    loader_init["required_exts"] = types
+                    loader_config["load_data"]["loader"][
+                        "init_args"
+                    ] = loader_init
+                    knowledge_config["data_processing"].append(loader_config)
+            elif backend_engine == "langchain":
+                knowledge_config = copy.deepcopy(DEFAULT_INDEX_CONFIG)
+                for data_dir, types in data_dirs_and_types.items():
+                    loader_config = copy.deepcopy(LANGCHAIN_LOADER_CONFIG)
+                    loader_init = copy.deepcopy(LANGCHAIN_INIT_CONFIG)
+                    loader_init["path"] = data_dir
+                    loader_init["glob"] = types
+                    loader_config["load_data"]["loader"][
+                        "init_args"
+                    ] = loader_init
+                    knowledge_config["data_processing"].append(loader_config)
+            else:
+                raise ValueError(
+                    f"Backend engine {backend_engine} not supported.",
+                )
+        else:
+            backend_engine = knowledge_config.pop("backend_engine", None)
+
+        if backend_engine is None:
+            # get the backend engine
+            backend_engine = self._get_backend_engine(knowledge_config)
+
+        if "llama_index" in backend_engine:
+            CustomKnowledge = LlamaIndexKnowledge
+            logger.info("Using llama_index backend engine")
+        elif "langchain" in backend_engine:
+            CustomKnowledge = LangChainKnowledge
+            logger.info("Using langchain backend engine")
+        else:
+            raise ValueError(f"Backend engine {backend_engine} not supported.")
 
         model_manager = ModelManager.get_instance()
 
-        self.stored_knowledge[knowledge_id] = LlamaIndexKnowledge(
+        self.stored_knowledge[knowledge_id] = CustomKnowledge(
             knowledge_id=knowledge_id,
             emb_model=model_manager.get_model_by_config_name(emb_model_name),
             knowledge_config=knowledge_config,
@@ -190,3 +246,59 @@ class KnowledgeBank:
                 duplicate=duplicate,
             )
             agent.knowledge_list.append(knowledge)
+
+    def _get_backend_engine(self, config: dict) -> str:
+        """Determines the backend engine based on the configuration.
+
+        Iterates through the `data_processing` section of the configuration.
+        It checks each process to find a dict that contains a 'module' key.
+        If found, it returns the corresponding backend engine
+        ('langchain' or 'llama_index').
+
+        Args:
+            config (dict):
+                The configuration dictionary containing
+                data processing information.
+
+        Returns:
+            str: The name of the backend engine.
+        """
+        data_processing = config.get("data_processing", [])
+
+        for process in data_processing:
+            if isinstance(process, dict):
+                for value in process.values():
+                    if isinstance(value, dict):
+                        if "module" in value:
+                            module_value = value["module"]
+                        else:
+                            module_value = self._recursive_find_module(value)
+
+                        if module_value:
+                            return module_value.split(".")[0]
+
+        raise ValueError(
+            "No rag backend engine module found, "
+            "please check your knowledge config",
+        )
+
+    def _recursive_find_module(self, d: dict) -> Optional[str]:
+        """Recursively searches for a 'module' key in a nested dict.
+
+        This method traverses a nested dict and returns
+        the value associated with the first 'module' key it finds.
+
+        Args:
+            d (dict): The dictionary to search.
+
+        Returns:
+            str: The value of the 'module' key, or None if not found.
+        """
+        for v in d.values():
+            if isinstance(v, dict):
+                if "module" in v:
+                    return v["module"]
+                module_value = self._recursive_find_module(v)
+                if module_value:
+                    return module_value
+        return None

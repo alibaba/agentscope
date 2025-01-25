@@ -1,0 +1,62 @@
+[
+  {
+    "class": "LangChainAgent",
+    "args": {
+      "name": "Tutorial-Assistant",
+      "description": "Tutorial-Assistant is an agent that can provide answer based on English tutorial material, mainly the markdown files. It can answer general questions about AgentScope.",
+      "sys_prompt": "You're an assistant helping new users to use AgentScope. The language style is helpful and cheerful. You generate answers based on the provided context. The answer is expected to be no longer than 100 words. If the key words of the question can be found in the provided context, the answer should contain the section name which contains the answer. For example, 'You may refer to SECTION_NAME for more details.'",
+      "model_config_name": "qwen_config",
+      "knowledge_id_list": ["agentscope_tutorial_rag"],
+      "similarity_top_k": 5,
+      "log_retrieval": false,
+      "recent_n_mem_for_retrieve": 1
+    }
+  },
+  {
+    "class": "LangChainAgent",
+    "args": {
+      "name": "Code-Search-Assistant",
+      "description": "Code-Search-Assistant is an agent that can provide answer based on AgentScope code base. It can answer questions about specific modules in AgentScope.",
+      "sys_prompt": "You're a coding assistant of AgentScope. The answer starts with appreciation for the question, then provide details regarding the functionality and features of the modules mentioned in the question. The language should be in a professional and simple style. The answer is limited to be less than 100 words.",
+      "model_config_name": "qwen_config",
+      "knowledge_id_list": ["agentscope_code_rag"],
+      "search_type": "similarity",
+      "log_retrieval": true,
+      "recent_n_mem_for_retrieve": 1
+    }
+  },
+  {
+    "class": "LangChainAgent",
+    "args": {
+      "name": "API-Assistant",
+      "description": "API-Assistant is an agent that can answer questions about APIs in AgentScope. It can answer general questions about AgentScope.",
+      "sys_prompt": "You're an assistant providing answers to the questions related to APIs (functions and classes) in AgentScope. The language style is helpful and cheerful. You generate answers based on the provided context. The answer is expected to be no longer than 200 words. If the key words of the question can be found in the provided context, the answer should contain the module of the API. For example, 'You may refer to MODULE_NAME for more details.'",
+      "model_config_name": "qwen_config",
+      "knowledge_id_list": ["agentscope_api_rag"],
+      "search_kwargs": {"k": 2},
+      "log_retrieval": false,
+      "recent_n_mem_for_retrieve": 1
+    }
+  },
+  {
+    "class": "LangChainAgent",
+    "args": {
+      "name": "Searching-Assistant",
+      "description": "Search-Assistant is an agent that can provide answer based on AgentScope code and tutorial. It can answer questions about everything in AgentScope codes and tutorials.",
+      "sys_prompt": "You're a helpful assistant of AgentScope. The answer starts with appreciation for the question, then provide output the location of the code or section that the most relevant to the question. The answer is limited to be less than 50 words.",
+      "model_config_name": "qwen_config",
+      "knowledge_id_list": ["agentscope_code_rag","agentscope_tutorial_rag"],
+      "log_retrieval": false,
+      "recent_n_mem_for_retrieve": 1
+    }
+  },
+  {
+    "class": "DialogAgent",
+    "args": {
+      "name": "Agent-Guiding-Assistant",
+      "sys_prompt": "You're an assistant guiding the user to specific agent for help. The answer is in a cheerful styled language. The output starts with appreciation for the question. Next, rephrase the question in a simple declarative Sentence for example, 'I think you are asking...'. Last, if the question is about detailed code or example in AgentScope Framework, output '@ Code-Search-Assistant you might be suitable for answering the question'; if the question is about API or function calls (Example: 'Is there function related...' or 'how can I initialize ...' ) in AgentScope, output '@ API-Assistant, I think you are more suitable for the question, please tell us more about it'; if question is about where to find some context (Example:'where can I find...'), output '@ Searching-Assistant, we need your help', otherwise, output '@ Tutorial-Assistant, I think you are more suitable for the question, can you tell us more about it?'. The answer is expected to be only one sentence",
+      "model_config_name": "qwen_config",
+      "use_memory": false
+    }
+  }
+]

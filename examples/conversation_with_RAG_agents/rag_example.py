@@ -78,6 +78,16 @@ def main() -> None:
         },
     )
 
+    # # if use langchain knowledge, we need to set backend_engine
+    # knowledge_bank.add_data_as_knowledge(
+    #     knowledge_id="agentscope_tutorial_rag",
+    #     emb_model_name="qwen_emb_config",
+    #     data_dirs_and_types={
+    #         "../../docs/sphinx_doc/en/source/tutorial": ["*.md"],
+    #     },
+    #     backend_engine="langchain"
+    # )
+
     # let knowledgebank to equip rag agent with a (set of) knowledge
     # corresponding to its knowledge_id_list
     for agent in rag_agent_list:
@@ -104,7 +114,7 @@ def main() -> None:
     rag_agent_descriptions = [
         "agent name: "
         + agent.name
-        + "\n agent description："
+        + "\n agent description: "
         + agent.description
         + "\n"
         for agent in rag_agent_list

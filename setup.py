@@ -88,6 +88,7 @@ extra_gradio_requires = [
 
 extra_rag_requires = [
     "llama-index==0.10.30",
+    "langchain==0.3.1",
 ]
 
 # API requires
