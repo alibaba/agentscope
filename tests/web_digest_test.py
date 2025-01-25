@@ -58,7 +58,7 @@ class TestWebDigest(unittest.TestCase):
         mock_get.return_value = mock_response
 
         # set parameters
-        fake_url = "fake-url"
+        fake_url = "http://fake-url.com"
 
         results = load_web(
             url=fake_url,
@@ -99,6 +99,12 @@ class TestWebDigest(unittest.TestCase):
             response,
             expected_result,
         )
+
+    def test_block_internal_ips(self) -> None:
+        """test whether can prevent internal_url successfully"""
+        internal_url = "http://localhost:8080/some/path"
+        response = load_web(internal_url)
+        self.assertEqual(ServiceExecStatus.ERROR, response.status)
 
 
 # This allows the tests to be run from the command line

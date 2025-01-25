@@ -3,6 +3,8 @@
 import json
 from urllib.parse import urlparse
 from typing import Optional, Callable, Sequence, Any
+import socket
+import ipaddress
 import requests
 from loguru import logger
 
@@ -37,12 +39,46 @@ def is_valid_url(url: str) -> bool:
         return False  # A ValueError indicates that the URL is not valid.
 
 
+def is_internal_ip_address(url: str) -> bool:
+    """
+    Check if a URL is to interal IP addresses
+    Args:
+        url (str): url to be checked
+
+    Returns:
+        bool: True if url is not to interal IP addresses,
+            False otherwise
+    """
+    parsed_url = urlparse(url)
+    hostname = parsed_url.hostname
+    if hostname is None:
+        # illegal hostname is ignore in this function
+        return False
+
+    # Resolve the hostname to an IP address
+    ip = socket.gethostbyname(hostname)
+    # Check if it's localhost or within the loopback range
+    if (
+        ip.startswith("127.")
+        or ip == "::1"
+        or ipaddress.ip_address(ip).is_private
+    ):
+        logger.warning(
+            f"Access to this URL {url} is "
+            f"restricted because it is private",
+        )
+        return True
+
+    return False
+
+
 def load_web(
     url: str,
     keep_raw: bool = True,
     html_selected_tags: Optional[Sequence[str]] = None,
     self_parse_func: Optional[Callable[[requests.Response], Any]] = None,
     timeout: int = 5,
+    exclude_internal_ips: bool = True,
 ) -> ServiceResponse:
     """Function for parsing and digesting the web page.
 
@@ -62,6 +98,8 @@ def load_web(
             The result is stored with `self_define_func`
             key
         timeout (int): timeout parameter for requests.
+        exclude_internal_ips (bool):
+            whether prevent the function access internal_ips
 
     Returns:
         `ServiceResponse`: If successful, `ServiceResponse` object is returned
@@ -87,6 +125,13 @@ def load_web(
                 "selected_tags_text": xxxxx
             }
     """
+    if exclude_internal_ips and is_internal_ip_address(url):
+        return ServiceResponse(
+            ServiceExecStatus.ERROR,
+            content=f"Access to this URL {url} is restricted "
+            f"because it is private",
+        )
+
     header = {
         "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
         "Cache-Control": "max-age=0",
