@@ -362,3 +362,128 @@ class LiteLLMChatWrapper(LiteLLMWrapperBase):
         """
 
         return ModelWrapperBase.format_for_common_chat_models(*args)
+
+
+class LiteLLMVisionWrapper(LiteLLMChatWrapper):
+    """The model wrapper based on litellm chat API with vision capabilities.
+
+    This class extends the LiteLLMChatWrapper to support multimodal inputs,
+    including both text and images. It is designed to work with vision-language
+    models that can process and respond to both textual and visual information.
+
+    reference:
+    https://docs.litellm.ai/docs/completion/vision#checking-if-a-model-supports-vision
+
+    Note:
+        - The model used must support vision capabilities (e.g., GPT-4o).
+
+    Example:
+        To use this wrapper with a vision-capable model:
+        1. specify "model_type" as "litellm_chat_v".
+        2. give the url of the image in message in the following way:
+        ```python
+        Msg(
+            name="Alice",
+            content="what is the image about",
+            role="user",
+            url="https://xxx.jpg",
+        )
+        ```
+
+
+    Response:
+        The response format is the same as LiteLLMChatWrapper,
+        but the model can now process and respond to both
+        text and image inputs.
+    """
+
+    model_type: str = "litellm_chat_v"
+
+    def __init__(
+        self,
+        config_name: str,
+        model_name: str = None,
+        **kwargs: Any,
+    ) -> None:
+        if model_name is None:
+            model_name = config_name
+            logger.warning("model_name is not set, use config_name instead.")
+
+        super().__init__(config_name, model_name, **kwargs)
+
+    def format(self, *args: Union[Msg, Sequence[Msg]]) -> List:
+        """Format the input messages for vision-language models.
+
+        This method processes a sequence of Msg objects, handling
+        both text and image content, and formats them into a
+        structure suitable for vision-language models.
+
+        Args:
+            *args (Union[Msg, Sequence[Msg]]): A sequence of Msg objects
+                                               or lists of Msg objects.
+
+        Returns:
+            List: A list of formatted messages ready for the
+                  vision-language model.
+
+        Raises:
+            TypeError: If the input is not a Msg object or a list
+                       of Msg objects.
+
+        Note:
+            - For 'system' role messages, only text content is allowed.
+            - For other roles, both text and image content can be included.
+            - Image content is expected to be provided as a URL in the
+              Msg object's 'url' field.
+        """
+        input_msgs = []
+        for item in args:
+            if item is None:
+                continue
+            if isinstance(item, Msg):
+                input_msgs.append(item)
+            elif isinstance(item, list) and all(
+                isinstance(subitem, Msg) for subitem in item
+            ):
+                input_msgs.extend(item)
+            else:
+                raise TypeError(
+                    "The input should be a Msg object or "
+                    f"a list of Msg objects, got {type(item)}.",
+                )
+
+        messages = []
+
+        for msg in input_msgs:
+            if msg.role == "system":
+                # For 'system' role, set 'content' directly to msg.content
+                content = msg.content
+            else:
+                formatted_content = []
+                if msg.content:  # Handle text content
+                    formatted_content.append(
+                        {
+                            "type": "text",
+                            "text": msg.content,
+                        },
+                    )
+
+                if msg.url:  # Handle image URL content
+                    formatted_content.append(
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": msg.url,
+                            },
+                        },
+                    )
+                content = formatted_content
+
+            messages.append(
+                {
+                    "role": msg.role,
+                    "content": content,
+                },
+            )
+
+        return messages
