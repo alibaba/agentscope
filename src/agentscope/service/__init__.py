@@ -45,6 +45,7 @@ from .multi_modality.openai_services import (
     openai_edit_image,
     openai_create_image_variation,
 )
+from .multi_modality.stablediffusion_services import sd_text_to_image
 
 from .service_response import ServiceResponse
 from .service_toolkit import ServiceToolkit
@@ -120,6 +121,7 @@ __all__ = [
     "openai_image_to_text",
     "openai_edit_image",
     "openai_create_image_variation",
+    "sd_text_to_image",
     "tripadvisor_search",
     "tripadvisor_search_location_photos",
     "tripadvisor_search_location_details",

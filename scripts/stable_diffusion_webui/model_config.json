@@ -1,0 +1,14 @@
+{
+    "model_type": "sd_txt2img",
+    "config_name": "stable_diffusion_txt2img",
+    "host": "127.0.0.1:7862",
+    "options": {
+      "sd_model_checkpoint": "Anything-V3.0-pruned",
+      "sd_lora": "add_detail",
+      "CLIP_stop_at_last_layers": 2
+    },
+    "generate_args": {
+      "steps": 50,
+      "n_iter": 1
+    }
+  }
