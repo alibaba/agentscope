@@ -1,0 +1,22 @@
+[
+    {
+        "model_type": "huggingface",
+        "config_name": "my_custom_model",
+
+        "pretrained_model_name_or_path": "google/gemma-7b",
+
+        "max_length": 128,
+        "device": "cuda",
+
+        "data_path": "GAIR/lima",
+
+        "fine_tune_config": {
+            "lora_config": {"r": 16, "lora_alpha": 32},
+            "training_args": {"max_steps": 200, "logging_steps": 1},
+            "bnb_config" : {"load_in_4bit": "True",
+                                    "bnb_4bit_use_double_quant": "True",
+                                    "bnb_4bit_quant_type": "nf4",
+                                    "bnb_4bit_compute_dtype": "torch.bfloat16"}
+        }
+    }
+]

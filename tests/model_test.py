@@ -83,7 +83,7 @@ class BasicModelTest(unittest.TestCase):
         )
 
     @patch("loguru.logger.warning")
-    def test_load_model_configs(self, mock_logging: MagicMock) -> None:
+    def testload_model_configs(self, mock_logging: MagicMock) -> None:
         """Test to load model configs"""
         configs = [
             {
