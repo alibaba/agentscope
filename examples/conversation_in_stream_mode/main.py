@@ -46,6 +46,13 @@ agentscope.init(
             "model_name": "gpt-4",
             "stream": True,
         },
+        {
+            "config_name": "stream_deepseek",
+            "model_type": "deepseek_chat",
+            "model_name": "deepseek-r1",
+            "stream": True,
+            "api_key": "{YOUR_API_KEY}",
+        },
     ],
     save_api_invoke=True,
     # If AgentScope Studio is running locally
@@ -101,8 +108,15 @@ class StreamingAgent(AgentBase):
 agent = StreamingAgent(
     "assistant",
     sys_prompt="You're a helpful assistant",
-    model_config_name=YOUR_SELECTED_MODEL_CONFIG_NAME,
+    model_config_name="stream_deepseek",
 )
+
+# from agentscope.agents import DialogAgent
+# agent = DialogAgent(
+#     name="assistant",
+#     sys_prompt="You're a helpful assistant",
+#     model_config_name="stream_deepseek",
+# )
 user = UserAgent("user")
 
 msg = None

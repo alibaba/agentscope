@@ -56,7 +56,14 @@ def log_stream_msg(msg: Msg, last: bool = True) -> None:
 
     # Print msg to terminal
     formatted_str = msg.formatted_str(colored=True)
-
+    
+    # Debug prefix tracking
+    # prev_len = _PREFIX_DICT.get(msg.id, 0)
+    # print(f"\n[DEBUG] Previous length: {prev_len}")
+    # print(f"[DEBUG] Current length: {len(formatted_str)}")
+    # print(f"[DEBUG] Content being sliced: '{formatted_str}'")
+    # print(f"[DEBUG] Slice result: '{formatted_str[prev_len:]}'")
+    
     print_str = formatted_str[_PREFIX_DICT.get(msg.id, 0) :]
 
     if last:
