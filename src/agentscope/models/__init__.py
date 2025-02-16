@@ -39,6 +39,9 @@ from .yi_model import (
     YiChatWrapper,
 )
 from .anthropic_model import AnthropicChatWrapper
+from .deepseek_model import (
+    DeepSeekChatWrapper,
+)
 
 _BUILD_IN_MODEL_WRAPPERS = [
     "PostAPIChatWrapper",
@@ -59,6 +62,7 @@ _BUILD_IN_MODEL_WRAPPERS = [
     "LiteLLMChatWrapper",
     "YiChatWrapper",
     "AnthropicChatWrapper",
+    "DeepSeekChatWrapper",
 ]
 
 __all__ = [
@@ -84,4 +88,5 @@ __all__ = [
     "LiteLLMChatWrapper",
     "YiChatWrapper",
     "AnthropicChatWrapper",
+    "DeepSeekChatWrapper",
 ]
