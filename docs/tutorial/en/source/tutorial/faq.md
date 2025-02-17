@@ -47,3 +47,13 @@ _**Q**: What GUI are provided in AgentScope?_
 _**Q**: What's the low-code development in AgentScope?_
 <br/>
 **A**: It means that you can develop your applications by dragging and dropping components. Refer to [Low-code Development](low_code) for more details.
+
+## About Reporting Bugs
+
+_**Q**: How can I report a bug in AgentScope?_
+<br/>
+**A**: If you encounter a bug while using AgentScope, please report it by opening an issue on our GitHub repository.
+
+_**Q**: How can I report a security bug in AgentScope?_
+<br/>
+**A**: If you discover a security issue in AgentScope, please report it to us through the [Alibaba Security Response Center (ASRC)](https://security.alibaba.com/).

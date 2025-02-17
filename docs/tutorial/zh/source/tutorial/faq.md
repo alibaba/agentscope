@@ -46,3 +46,13 @@ _**Q**：AgentScope 提供了哪些 GUI？_
 _**Q**：AgentScope 中的低代码开发是什么？_
 <br/>
 **A**：它意味着您可以通过拖拽组件来开发应用程序。详情请参考 [低代码开发](low_code)。
+
+## 关于报告漏洞
+
+_**问**：我如何报告 AgentScope 中的漏洞？_
+<br/>
+**答**：如果您在使用 AgentScope 时遇到漏洞，请通过在我们的 GitHub 仓库中创建问题来报告。
+
+_**问**：我如何报告 AgentScope 中的安全漏洞？_
+<br/>
+**答**：如果您发现 AgentScope 中的安全问题，请通过[阿里巴巴安全响应中心 (ASRC)](https://security.alibaba.com/)报告给我们。
