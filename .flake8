@@ -10,3 +10,6 @@ ignore =
     F403
     W503
     E731
+per-file-ignores =
+    examples/data_interpreter_mulit-agent/di_agents.py:E501
+    examples/data_interpreter_mulit-agent/di_multiagent.py:E501
