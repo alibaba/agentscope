@@ -1,0 +1,188 @@
+[
+  {
+    "knowledge_id": "agentscope_tutorial_rag",
+    "knowledge_type": "es_knowledge",
+    "emb_model_config_name": "qwen_emb_config",
+    "chunk_size": 1500,
+    "chunk_overlap": 50,
+    "language": ["English"],
+    "es_config": {
+        "mode": "update",
+        "vector_store_args": {
+            "index_name": "agentscope_tutorial_rag",
+            "es_url": "http://localhost:9200"
+        }
+    },
+    "data_processing": [
+      {
+        "load_data": {
+          "loader": {
+            "create_object": true,
+            "module": "llama_index.core",
+            "class": "SimpleDirectoryReader",
+            "init_args": {
+              "input_dir": "~/agentscope_clean/docs/text/build_tutorial",
+              "required_exts": [
+                ".txt"
+              ]
+            }
+          }
+        },
+        "store_and_index": {
+          "transformations": [
+            {
+              "create_object": true,
+              "module": "llama_index.core.node_parser",
+              "class": "SentenceSplitter",
+              "init_args": {
+                "chunk_size": 1500,
+                "chunk_overlap": 200
+              }
+            }
+          ]
+        }
+      },
+      {
+        "load_data": {
+          "loader": {
+            "create_object": true,
+            "module": "llama_index.core",
+            "class": "SimpleDirectoryReader",
+            "init_args": {
+              "input_dir": "~/agentscope_clean/docs/",
+              "required_exts": [
+                ".md"
+              ]
+            }
+          }
+        },
+        "store_and_index": {
+          "transformations": [
+            {
+              "create_object": true,
+              "module": "llama_index.core.node_parser",
+              "class": "SentenceSplitter",
+              "init_args": {
+                "chunk_size": 1500,
+                "chunk_overlap": 200
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "knowledge_id": "agentscope_api_rag",
+    "knowledge_type": "es_knowledge",
+    "emb_model_config_name": "qwen_emb_config",
+    "chunk_size": 1500,
+    "chunk_overlap": 50,
+    "language": ["English"],
+    "es_config": {
+        "mode": "update",
+        "vector_store_args": {
+            "index_name": "agentscope_api_rag",
+            "es_url": "http://localhost:9200"
+        }
+    },
+    "data_processing": [
+      {
+        "load_data": {
+          "loader": {
+            "create_object": true,
+            "module": "llama_index.core",
+            "class": "SimpleDirectoryReader",
+            "init_args": {
+              "input_dir": "~/agentscope_clean/docs/text/build_api/",
+              "required_exts": [
+                ".txt"
+              ]
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "knowledge_id": "agentscope_example_rag",
+    "knowledge_type": "es_knowledge",
+    "emb_model_config_name": "qwen_emb_config",
+    "chunk_size": 1500,
+    "chunk_overlap": 40,
+    "language": ["English"],
+    "es_config": {
+        "mode": "update",
+        "vector_store_args": {
+            "index_name": "agentscope_example_rag",
+            "es_url": "http://localhost:9200"
+        }
+    },
+    "data_processing": [
+      {
+        "load_data": {
+          "loader": {
+            "create_object": true,
+            "module": "llama_index.core",
+            "class": "SimpleDirectoryReader",
+            "init_args": {
+              "input_dir": "~/agentscope_clean/examples/",
+              "recursive": true,
+              "required_exts": [
+                ".py",
+                ".md"
+              ]
+            }
+          }
+        },
+        "store_and_index": {
+          "transformations": [
+            {
+              "create_object": true,
+              "module": "llama_index.core.node_parser",
+              "class": "TokenTextSplitter",
+              "init_args": {
+                "chunk_size": 1500,
+                "chunk_overlap": 40,
+                "separator": " "
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "knowledge_id": "agentscope_qa_rag",
+    "knowledge_type": "es_knowledge",
+    "emb_model_config_name": "qwen_emb_config",
+    "chunk_size": 100,
+    "chunk_overlap": 50,
+    "language": ["Chinese"],
+    "es_config": {
+        "mode": "update",
+        "vector_store_args": {
+            "index_name": "agentscope_qa_rag",
+            "es_url": "http://localhost:9200"
+        }
+    },
+    "data_processing": [
+      {
+        "load_data": {
+          "loader": {
+            "create_object": true,
+            "module": "llama_index.core",
+            "class": "SimpleDirectoryReader",
+            "init_args": {
+              "input_dir": "./standard_answers",
+              "required_exts": [
+                ".txt"
+              ],
+              "encoding": "utf-8"
+            }
+          }
+        }
+      }
+    ]
+  }
+]

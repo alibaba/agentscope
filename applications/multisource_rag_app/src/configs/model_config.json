@@ -1,0 +1,38 @@
+[
+  {
+    "model_type": "dashscope_text_embedding",
+    "config_name": "qwen_emb_config",
+    "model_name": "text-embedding-v2",
+    "api_key": ""
+  },
+  {
+    "model_type": "dashscope_multimodal",
+    "config_name": "dashscope_multimodal_config",
+    "model_name": "qwen-vl-max",
+    "api_key": ""
+  },
+  {
+    "model_type": "async_dashscope_chat",
+    "config_name": "async_qwen_config",
+    "model_name": "qwen-max",
+    "api_key": ""
+  },
+  {
+    "model_type": "dashscope_chat",
+    "config_name": "qwen_config",
+    "model_name": "qwen-max",
+    "api_key": ""
+  },
+  {
+    "model_type": "dashscope_chat",
+    "config_name": "sync_qwen_config",
+    "model_name": "qwen-turbo",
+    "api_key": ""
+  },
+  {
+    "model_type": "async_dashscope_chat",
+    "config_name": "qwen_turbo_config",
+    "model_name": "qwen-turbo",
+    "api_key": ""
+  }
+]

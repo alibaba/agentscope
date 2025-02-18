@@ -70,6 +70,7 @@ repos:
                 | \.demo$
                 | \.md$
                 | \.html$
+                | ^examples/paper_llm_based_algorithm/
           )
         args: [
           --disable=W0511,

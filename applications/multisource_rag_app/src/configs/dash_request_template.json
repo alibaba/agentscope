@@ -1,0 +1,32 @@
+{
+  "header": {
+    "request_id": "test_rag_chat"
+  },
+  "payload": {
+      "input": {
+          "messages": [
+              {
+                  "role": "user",
+                  "content": "agentscope是什么？"
+              },
+              {
+                  "role": "assistant",
+                  "name": "assistant",
+                  "from": "text",
+                  "content": "AgentScope是一款全新的Multi-Agent框架，专为应用开发者打造!"
+              },
+              {
+                  "role": "user",
+                  "content": "简单介绍一下你自己吧"
+              }
+          ]
+      },
+      "parameters": {
+          "custom": {
+              "scene": "rag_chat",
+              "vdb_url": "# ...自定义参数",
+              "vdb_ak": "# ...自定义参数"
+          }
+      }
+  }
+}

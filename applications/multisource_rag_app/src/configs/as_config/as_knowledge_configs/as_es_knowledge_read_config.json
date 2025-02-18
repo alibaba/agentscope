@@ -1,0 +1,92 @@
+[
+  {
+    "knowledge_id": "agentscope_tutorial_rag",
+    "knowledge_type": "es_knowledge",
+    "emb_model_config_name": "qwen_emb_config",
+    "chunk_size": 500,
+    "chunk_overlap": 50,
+    "language": ["English"],
+    "es_config": {
+        "mode": "read-only",
+        "vector_store_args": {
+            "index_name": "agentscope_tutorial_rag",
+            "es_url": "http://localhost:9200"
+        }
+    }
+  },
+  {
+    "knowledge_id": "agentscope_code_rag",
+    "knowledge_type": "es_knowledge",
+    "emb_model_config_name": "qwen_emb_config",
+    "chunk_size": 500,
+    "chunk_overlap": 50,
+    "language": ["English"],
+    "es_config": {
+        "mode": "read-only",
+        "vector_store_args": {
+            "index_name": "agentscope_code_rag",
+            "es_url": "http://localhost:9200"
+        }
+    }
+  },
+  {
+    "knowledge_id": "agentscope_api_rag",
+    "knowledge_type": "es_knowledge",
+    "emb_model_config_name": "qwen_emb_config",
+    "chunk_size": 500,
+    "chunk_overlap": 50,
+    "language": ["English"],
+    "es_config": {
+        "mode": "read-only",
+        "vector_store_args": {
+            "index_name": "agentscope_api_rag",
+            "es_url": "http://localhost:9200"
+        }
+    }
+  },
+  {
+    "knowledge_id": "agentscope_example_rag",
+    "knowledge_type": "es_knowledge",
+    "emb_model_config_name": "qwen_emb_config",
+    "chunk_size": 2048,
+    "chunk_overlap": 40,
+    "language": ["English"],
+    "es_config": {
+        "mode": "read-only",
+        "vector_store_args": {
+            "index_name": "agentscope_example_rag",
+            "es_url": "http://localhost:9200"
+        }
+    }
+  },
+  {
+    "knowledge_id": "agentscope_qa_rag",
+    "knowledge_type": "es_knowledge",
+    "emb_model_config_name": "qwen_emb_config",
+    "chunk_size": 100,
+    "chunk_overlap": 50,
+    "language": ["Chinese"],
+    "es_config": {
+        "mode": "read-only",
+        "vector_store_args": {
+            "index_name": "agentscope_qa_rag",
+            "es_url": "http://localhost:9200"
+        }
+    }
+  },
+  {
+    "knowledge_id": "agentscope_all_rag",
+    "knowledge_type": "es_knowledge",
+    "emb_model_config_name": "qwen_emb_config",
+    "chunk_size": 300,
+    "language": ["English", "Chinese"],
+    "chunk_overlap": 25,
+    "es_config": {
+        "mode": "read-only",
+        "vector_store_args": {
+            "index_name": "agentscope_all_rag",
+            "es_url": "http://localhost:9200"
+        }
+    }
+  }
+]
