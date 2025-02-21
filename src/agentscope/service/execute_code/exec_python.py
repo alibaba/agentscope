@@ -153,11 +153,12 @@ def _sys_execute(
 
         sys_python_guard(maximum_memory_bytes)
         output_buffer, error_buffer = io.StringIO(), io.StringIO()
+        exec_namespace = {}  # Create a shared namespace
         with timer(timeout), contextlib.redirect_stdout(
             output_buffer,
         ), contextlib.redirect_stderr(error_buffer):
             try:
-                exec(code)
+                exec(code, exec_namespace, exec_namespace)  # Use the namespace
                 is_success = True
             except Exception:
                 error_buffer.write(traceback.format_exc())
@@ -245,16 +246,20 @@ def _execute_python_code_docker(
 
         # Construct the timer context manager code
         exec_code_with_timer = (
-            "import contextlib, signal\nfrom typing import Any, Generator, "
-            "Optional, Union\n"
+            "import contextlib, signal\n"
+            "from typing import Any, Generator, Optional, Union\n"
             + timer_code
-            + f"\nwith timer({timeout}):\n    "
+            + f"\nwith timer({timeout}):\n"
         )
 
-        # Construct the command to be executed inside the timer context
-        exec_code_with_timer = f"""{exec_code_with_timer}
-            exec('''{exec_code}''')
-        """
+        # Add indentation to the exec_code
+        indented_exec_code = "\n".join(
+            "    " + line for line in exec_code.splitlines()
+        )
+
+        # Construct the complete code to execute
+        exec_code_with_timer = f"""{exec_code_with_timer}{indented_exec_code}
+"""
 
         # Create a temporary file to store the commands to run
         code_hash = md5(code.encode()).hexdigest()
@@ -285,6 +290,8 @@ def _execute_python_code_docker(
                     volumes={os.getcwd(): {"bind": "/app", "mode": "rw"}},
                     working_dir="/app",
                     detach=True,
+                    network_disabled=False,
+                    mem_limit=maximum_memory_bytes,
                 )
                 wait_response = container.wait()
                 docker_out = container.logs(stdout=True, stderr=False).decode(
@@ -313,6 +320,7 @@ def _execute_python_code_docker(
                     break
         except Exception as e:
             logger.error(e)
+            return "", str(e), False
         finally:
             # Clean up the temporary file
             if os.path.exists(file_name):
@@ -340,10 +348,6 @@ def _execute_python_code_docker(
             )
 
     # Step 2. Execute code and catch Import Error and re-install
-    run_args = {"image": image_name, "detach": True, "network_disabled": False}
-    if maximum_memory_bytes is not None:
-        run_args["mem_limit"] = maximum_memory_bytes
-
     # Try to execute the code and retry if ImportErrors are encountered
     output, error, status = docker_execute(code)
 
